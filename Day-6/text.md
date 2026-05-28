@@ -1,0 +1,6 @@
+T3gN9Wqmc2wFcPjq
+ASHUTOSH
+
+DSGQ3PzeLoOVCkHr
+ashutoshsahuit_db_user
+mongodb+srv://ashutoshsahuit_db_user:DSGQ3PzeLoOVCkHr@cluster0.bnehqez.mongodb.net/
