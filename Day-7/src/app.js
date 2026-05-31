@@ -29,3 +29,4 @@ app.get("/notes",async(req,res)=>{
         notes
     })
 })
+
