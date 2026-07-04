@@ -20,5 +20,8 @@ const userSchema = new mongoose.Schema({
         type:String,
         default:"Day-11-Insta-Clone\x543c3130fba0be6cfda40c0db5fe74c1.jpg"
     }
-
 })
+
+const userModel = mongoose.model("users",userSchema)
+
+module.exports = userModel
