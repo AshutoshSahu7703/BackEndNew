@@ -12,22 +12,22 @@ authRouter.post("/register",async (req,res)=>{
 
     const {name,email,password,bio,profileImage}=req.body
 
-    const isUserAlreadyExist=userModel.findOne({
+    const isUserAlreadyExist= await userModel.findOne({
         $or:[
-            {username},
+            {name},
             {email}
         ]
     })
 
     if(isUserAlreadyExist){
         return res.status(409).json({
-            message:"User already exist"+(isUserAlreadyExist===email?"with this email":"with this username")
+            message:"User already exist"+(isUserAlreadyExist.email === email?"with this email":"with this username")
         })
     }
     
-    const hash = crypto.createHash("md5").update(password).digest("hex")
+    const hash = await crypto.createHash("md5").update(password).digest("hex")
 
-    const user = userModel.create({
+    const user = await userModel.create({
         name,
         email,
         password:hash,
@@ -35,7 +35,7 @@ authRouter.post("/register",async (req,res)=>{
         profileImage
     })
 
-    const token = JWT.sign({
+    const token = jwt.sign({
         id: user._id,
     },process.env.JWT_SECRET,{expiresIn:"1d"})
 
@@ -44,8 +44,14 @@ authRouter.post("/register",async (req,res)=>{
     res.status(200).json({
         message:"User registered Successfully",
         user:{
-            
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                bio: user.bio,
+                profileImage: user.profileImage
         }
     })
     
 })
+
+module.exports=authRouter
