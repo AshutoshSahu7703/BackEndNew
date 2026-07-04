@@ -54,4 +54,45 @@ authRouter.post("/register",async (req,res)=>{
     
 })
 
+authRouter.post("/login",async (req,res)=>{
+    const {email,name,password}=req.body
+
+    const user = await userModel.findOne({
+        $or:[
+        {
+            name:name
+        },
+        {
+            email:email
+        }
+    ]
+    })
+
+    if(!user){
+        return res.status(404).json({
+            message:"user not resgistered yet"
+        })
+    }
+
+    const hash = await crypto.createHash("md5").update(password).digest("hex")
+
+    const isPasswordValid= hash === user.password
+
+    if(!isPasswordValid){
+        res.status(401).json({
+            message:"Invalid Password"
+        })
+    }
+
+    const token = jwt.sign({
+        id:user._id
+    },process.env.JWT_SECRET,{expiresIn:"1d"})
+
+    res.cookie("jwt-token",token)
+
+    res.status(201).json({
+        message:"user logged in"
+    })
+})
+
 module.exports=authRouter
