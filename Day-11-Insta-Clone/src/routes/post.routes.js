@@ -10,6 +10,8 @@ const postController=require("../controller/post.controller")
 
 postRouter.post("/",upload.single("image"),postController.createPost)
 
+postRouter.get("/",postController.getPost)
+
 module.exports=postRouter
 
 

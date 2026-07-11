@@ -54,6 +54,40 @@ async function createPost(req, res) {
 
 }
 
+async function getPost(req,res){
+    const token=req.cookies["jwt-token"]
+
+    if(!token){
+        return res.status(401).json({
+            message:"Unauthorized Access"
+        })
+    }
+
+    let decoded 
+    try{
+        decoded = jwt.verify(token,process.env.JWT_SECRET)
+    }
+    catch(err){
+        return res.status(401).json({
+            message:"Unauthorized acess"
+        })
+    }
+
+    const userId=decoded.id
+
+    const posts =  await postModel.find({
+        user:userId
+    })
+
+    res.status(200).json({
+        message:"Posts fetched Successfully",
+        posts 
+    })
+
+
+}
+
 module.exports={
     createPost,
+    getPost
 }
