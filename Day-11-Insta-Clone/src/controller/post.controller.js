@@ -30,7 +30,16 @@ async function createPost(req, res) {
         })
     }
 
-    const decoded = jwt.verify(token,process.env.JWT_SECRET)
+    let decoded
+
+    try{
+        decoded = jwt.verify(token,process.env.JWT_SECRET)
+    }
+    catch(err){
+        return res.status(401).json({
+            message:"User not Authorized"
+        })
+    }
 
     const post = await postModel.create({
         caption:req.body.caption,
