@@ -87,7 +87,56 @@ async function getPost(req,res){
 
 }
 
+async function getPostDetails(req,res){
+
+    const token = req.cookies["jwt-token"]
+
+    if(!token){
+         return res.status(401).json({
+            message:"Token Not Available"
+        })
+    }
+
+    let decoded
+
+    try{
+        decoded = jwt.verify(token,process.env.JWT_SECRET)
+    }
+    catch(err){
+        return res.status(403).json({
+            message:"Invalid token"
+        })
+    }
+
+    const userId=decoded.id
+
+    const postId=req.params.postId
+
+    const post = await postModel.findById(postId)
+
+    if(!post){
+        return res.status(404).json({
+            message:"Post Not Found"
+        })
+    }
+
+    const isValidUser= post.user.toString()===userId
+
+    if(!isValidUser){
+        return res.status(403).json({
+            message:"forbidden content"
+        })
+    }
+
+    return res.status(200).json({
+        message:"Post Fetched Successfully",
+        post
+    })
+
+}
+
 module.exports={
     createPost,
-    getPost
+    getPost,
+    getPostDetails
 }
