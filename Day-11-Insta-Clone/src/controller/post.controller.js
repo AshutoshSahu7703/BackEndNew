@@ -21,30 +21,11 @@ async function createPost(req, res) {
         fileName:"Test",
         folder:"Cohort-2-Insta-Clone-Posts"
     })
-   
-    const token = req.cookies["jwt-token"]
-
-    if(!token){
-        return res.status(401).json({
-            message:"Token not providedm, Unauthorized access"
-        })
-    }
-
-    let decoded
-
-    try{
-        decoded = jwt.verify(token,process.env.JWT_SECRET)
-    }
-    catch(err){
-        return res.status(401).json({
-            message:"User not Authorized"
-        })
-    }
 
     const post = await postModel.create({
         caption:req.body.caption,
         imageUrl:file.url,
-        user:decoded.id
+        user:req.user.id
     })
 
     res.status(201).json({
@@ -55,25 +36,8 @@ async function createPost(req, res) {
 }
 
 async function getPost(req,res){
-    const token=req.cookies["jwt-token"]
 
-    if(!token){
-        return res.status(401).json({
-            message:"Unauthorized Access"
-        })
-    }
-
-    let decoded 
-    try{
-        decoded = jwt.verify(token,process.env.JWT_SECRET)
-    }
-    catch(err){
-        return res.status(401).json({
-            message:"Unauthorized acess"
-        })
-    }
-
-    const userId=decoded.id
+    const userId=req.user.id
 
     const posts =  await postModel.find({
         user:userId
@@ -89,26 +53,7 @@ async function getPost(req,res){
 
 async function getPostDetails(req,res){
 
-    const token = req.cookies["jwt-token"]
-
-    if(!token){
-         return res.status(401).json({
-            message:"Token Not Available"
-        })
-    }
-
-    let decoded
-
-    try{
-        decoded = jwt.verify(token,process.env.JWT_SECRET)
-    }
-    catch(err){
-        return res.status(403).json({
-            message:"Invalid token"
-        })
-    }
-
-    const userId=decoded.id
+    const userId=req.user.id
 
     const postId=req.params.postId
 
