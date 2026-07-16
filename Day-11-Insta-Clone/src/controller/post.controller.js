@@ -1,8 +1,12 @@
 const postModel=require("../models/post.model")
 
+const likeModel=require("../models/like.model")
+
 const jwt = require("jsonwebtoken")
 
 const ImageKit=require("@imagekit/nodejs")
+const { default: mongoose } = require("mongoose")
+const { post } = require("../routes/post.routes")
 
 const imagekit=new ImageKit({
     privateKey:process.env.IMAGEKIT_PRIVATE_KEY,
@@ -80,8 +84,44 @@ async function getPostDetails(req,res){
 
 }
 
+async function likePost(req,res){
+
+      const userName = req.user.id
+      const postId=req.params.postId
+
+      const post = await postModel.findById(postId)
+
+      if(!post){
+        return res.status(404).json({
+            message:"Post not found"
+        })
+      }
+
+        const isAlreadyLiked= await likeModel.findOne({
+            post:postId,
+            user:userName
+        })
+
+      if(isAlreadyLiked){
+        return res.status(400).json({
+            message:"Post already liked"
+        })
+      }
+
+      const like = await likeModel.create({
+        post:postId,
+        user:userName
+      })
+
+      return res.status(200).json({
+        message:"Post liked successfully",
+        like
+      })
+}
+
 module.exports={
     createPost,
     getPost,
-    getPostDetails
+    getPostDetails,
+    likePost
 }
